@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/db";
-import { answers, questions, users, votes, interactions } from "@/db/schema";
+import { answers, questions, users, votes, interactions, notifications } from "@/db/schema";
 import { revalidatePath } from "next/cache";
 import { and, asc, desc, eq, sql } from "drizzle-orm";
 import {
@@ -10,6 +10,7 @@ import {
     AnswerVoteParams,
     DeleteAnswerParams,
 } from "./shared.types";
+import { notifyQuestionAuthor } from "./notifications";
 
 export async function createAnswer(params: CreateAnswerParams) {
     try {
@@ -25,12 +26,15 @@ export async function createAnswer(params: CreateAnswerParams) {
             })
             .returning();
 
-        // Get question details for interaction
-        const questionObject = await db.query.questions.findFirst({
-            where: eq(questions.id, questionId)
+        // Get question details for interaction and notification
+        const question = await db.query.questions.findFirst({
+            where: eq(questions.id, questionId),
+            with: {
+                author: true,
+            }
         });
 
-        if (questionObject) {
+        if (question && question.author) {
             // Create interaction record
             await db.insert(interactions).values({
                 userId: authorId,
@@ -38,6 +42,32 @@ export async function createAnswer(params: CreateAnswerParams) {
                 questionId,
                 answerId: newAnswer.id,
             });
+
+            // Get answer author details for notification
+            const answerAuthor = await db.query.users.findFirst({
+                where: eq(users.id, authorId)
+            });
+
+            // Check if a notification already exists for this answer
+            const existingNotification = await db.query.notifications.findFirst({
+                where: and(
+                    eq(notifications.answerId, newAnswer.id),
+                    eq(notifications.userId, question.authorId),
+                    eq(notifications.type, "answer")
+                ),
+            });
+
+            // Create notification for question author (if not self-answering and no existing notification)
+            if (question.authorId !== authorId && answerAuthor && !existingNotification) {
+                await db.insert(notifications).values({
+                    userId: question.authorId,
+                    type: "answer",
+                    title: "New Answer to Your Question",
+                    content: `${answerAuthor.name} answered your question: "${question.title}"`,
+                    questionId,
+                    answerId: newAnswer.id,
+                });
+            }
         }
 
         // Increase author's reputation +10 points for answering a question

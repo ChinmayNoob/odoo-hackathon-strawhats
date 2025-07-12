@@ -54,7 +54,7 @@ const LeftSideBar = () => {
     // Return a skeleton version before mounting to prevent hydration mismatch
     if (!mounted) {
         return (
-            <section className="sticky left-0 top-0 flex h-screen flex-col justify-between overflow-y-auto bg-light-1 p-6 pt-36 dark:bg-dark-2 max-sm:hidden lg:w-[280px]">
+            <section className="sticky border-r border-zinc-200 dark:border-zinc-700 left-0 top-0 flex h-screen flex-col justify-between overflow-y-auto bg-light-1 p-6 pt-36 dark:bg-dark-2 max-sm:hidden lg:w-[280px]">
                 <div className="flex flex-1 flex-col gap-4">
                     {sidebarLinks.map((item, index) => (
                         <div
@@ -72,7 +72,7 @@ const LeftSideBar = () => {
     }
 
     return (
-        <section className="sticky left-0 top-0 flex h-screen flex-col justify-between overflow-y-auto bg-light-1 p-6 pt-36 dark:bg-dark-2 max-sm:hidden lg:w-[280px]">
+        <section className="sticky border-r border-zinc-200 dark:border-zinc-800 left-0 top-0 flex h-screen flex-col justify-between overflow-y-auto bg-light-1 p-6 pt-36 dark:bg-dark-2 max-sm:hidden lg:w-[280px]">
             <div className="flex flex-1 flex-col gap-4">
                 {links.map((item) => {
                     // takes array from sideBarLinks and creats a Link for each object in array for the sidebar

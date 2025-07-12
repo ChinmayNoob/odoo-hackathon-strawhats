@@ -7,7 +7,7 @@ import Theme from "./theme-toggle";
 import MobileNav from "./mobile-navbar";
 import { useCurrentUser } from "@/lib/axios/users";
 import { PiScribbleLoopBold } from "react-icons/pi";
-
+import NotificationBell from "@/components/common/notifications/notification-bell";
 
 const Navbar = () => {
     const [mounted, setMounted] = useState(false);
@@ -30,6 +30,7 @@ const Navbar = () => {
     };
 
     const user = {
+        id: userResult?.success && userResult.user ? userResult.user.id : 0,
         name: userResult?.success && userResult.user ? userResult.user.name : "",
         username: userResult?.success && userResult.user ? userResult.user.username : "",
         picture: userResult?.success && userResult.user ? userResult.user.picture : "",
@@ -60,7 +61,6 @@ const Navbar = () => {
             {/* Logo Section */}
             <Link href="/" className="flex items-center gap-1 min-w-11 sm:min-w-32">
                 <PiScribbleLoopBold size={28} />
-
                 <p className="font-spaceGrotesk font-bold text-2xl max-sm:hidden">
                     StackIt
                 </p>
@@ -69,12 +69,14 @@ const Navbar = () => {
             {/* Center Section - Mobile Only */}
             <div className="flex items-center justify-center gap-3 sm:hidden">
                 <Theme />
+                {user.id > 0 && <NotificationBell userId={user.id} />}
                 <MobileNav user={user} popularTags={JSON.stringify(allTags?.tags)} />
             </div>
 
             {/* Right Section - Desktop */}
             <div className="flex items-center gap-3 max-sm:hidden">
                 <Theme />
+                {user.id > 0 && <NotificationBell userId={user.id} />}
                 <SignedIn>
                     <UserButton
                         appearance={{

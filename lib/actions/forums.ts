@@ -1,6 +1,6 @@
 "use server";
 import { db } from "@/db";
-import { forums, forumMembers, questions, users, tags, questionTags, interactions, votes, answers } from "@/db/schema";
+import { forums, forumMembers, questions, users, tags, questionTags, interactions, votes, answers, notifications } from "@/db/schema";
 import { revalidatePath } from "next/cache";
 import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
 import {
@@ -17,6 +17,7 @@ import {
     forumWithStats,
     GetforumMembersParams,
 } from "./shared.types";
+import { notifyForumMembers } from "./notifications";
 
 export async function createforum(params: CreateforumParams) {
     try {
@@ -594,6 +595,42 @@ export async function askQuestionInforum(params: AskQuestionInforumParams) {
             questionId: question.id,
             action: "ask-question",
         });
+
+        // Get forum details and question author for notifications
+        const forum = await db.query.forums.findFirst({
+            where: eq(forums.id, forumId)
+        });
+
+        const questionAuthor = await db.query.users.findFirst({
+            where: eq(users.id, authorId)
+        });
+
+        if (forum && questionAuthor) {
+            // Get all forum members except the question author
+            const members = await db
+                .select({
+                    userId: forumMembers.userId,
+                })
+                .from(forumMembers)
+                .where(
+                    and(
+                        eq(forumMembers.forumId, forumId),
+                        sql`${forumMembers.userId} != ${authorId}`
+                    )
+                );
+
+            // Create notifications for each member
+            for (const member of members) {
+                await db.insert(notifications).values({
+                    userId: member.userId,
+                    type: "forum_question",
+                    title: "New Question in Forum",
+                    content: `${questionAuthor.name} posted a new question in ${forum.name}: "${title}"`,
+                    questionId: question.id,
+                    forumId,
+                });
+            }
+        }
 
         // Increment author reputation
         await db

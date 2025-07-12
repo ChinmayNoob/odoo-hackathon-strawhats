@@ -135,3 +135,19 @@ export const forumMembers = pgTable(
         joinedAt: t.timestamp("joined_at").defaultNow().notNull(),
     }
 )
+
+export const notifications = pgTable(
+    "notifications",
+    {
+        id: t.integer().primaryKey().generatedAlwaysAsIdentity(),
+        userId: t.integer("user_id").references(() => users.id, { onDelete: "cascade" }).notNull(),
+        type: t.varchar().notNull(), // 'answer', 'forum_question'
+        title: t.varchar().notNull(),
+        content: t.text().notNull(),
+        questionId: t.integer("question_id").references(() => questions.id, { onDelete: "cascade" }),
+        answerId: t.integer("answer_id").references(() => answers.id, { onDelete: "cascade" }),
+        forumId: t.integer("forum_id").references(() => forums.id, { onDelete: "cascade" }),
+        isRead: t.boolean().default(false),
+        createdAt: t.timestamp("created_at").defaultNow().notNull(),
+    }
+);
