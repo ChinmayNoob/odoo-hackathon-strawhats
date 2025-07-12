@@ -102,7 +102,7 @@ const LeftSideBar = () => {
                             {/* checks if the link is active using isActive if yes apply needed classes */}
                             {item.icon ? (
                                 <item.icon
-                                    size={30}
+                                    size={23}
                                     className={`${isActive ? "" : "text-zinc-500 dark:text-zinc-400"}`}
                                 />
                             ) : (

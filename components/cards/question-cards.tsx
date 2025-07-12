@@ -3,13 +3,13 @@ import React from "react";
 import { getTimestamp } from "@/lib/utils";
 import Image from "next/image";
 import VoteButtons from "../questions/vote-buttons";
-import { SiLeetcode } from "react-icons/si";
 import { IoBookmarks, IoBookmarksOutline } from "react-icons/io5";
 import { FiEye, FiMessageCircle } from "react-icons/fi";
 import { useToggleSaveQuestion, useIsQuestionSaved } from "@/lib/axios/users";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { useViewQuestion } from "@/lib/axios/interactions";
+import { FaGlobe } from "react-icons/fa6";
 
 interface VoteStatus {
   questionId?: number;
@@ -111,7 +111,7 @@ const QuestionCard = (props: QuestionProps) => {
   };
 
   return (
-    <div className="group bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 rounded-xl p-6 transition-all duration-300 hover:shadow-lg dark:hover:shadow-gray-800/25 mb-4">
+    <div className="group bg-white dark:bg-neutral-900 border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 rounded-xl p-6 transition-all duration-300 hover:shadow-lg dark:hover:shadow-gray-800/25 mb-4">
       {/* Header Section */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-start gap-3">
@@ -133,7 +133,7 @@ const QuestionCard = (props: QuestionProps) => {
                 className="absolute -bottom-1 -right-1 bg-orange-500 hover:bg-orange-600 transition-colors rounded-full p-1 shadow-lg"
                 title="LeetCode Profile"
               >
-                <SiLeetcode size={10} className="text-white" />
+                <FaGlobe size={10} className="text-white" />
               </Link>
             )}
           </div>
