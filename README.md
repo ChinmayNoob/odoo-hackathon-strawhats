@@ -4,7 +4,7 @@
 ### Team Lead Email - siddhvyas384@gmail.com
 ### Team Lead Name - Siddh Vyas
 
-### Team Members
+## Team Members
 
 ### Chinmay Sawant - chinmaysk0408@gmail.com
 ### Darshil Prajapati -darshilprajapati11@gmail.com
